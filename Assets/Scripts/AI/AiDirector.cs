@@ -15,6 +15,7 @@ namespace OnTheWay.AI
         public Button spawnCarButton;
 
         private bool isCarActive = false;
+        public bool IsCarActive => isCarActive;
 
         AdjacencyGraph pedestrianGraph = new AdjacencyGraph();
         AdjacencyGraph carGraph = new AdjacencyGraph();
@@ -26,6 +27,16 @@ namespace OnTheWay.AI
             if (spawnCarButton != null)
             {
                 spawnCarButton.onClick.AddListener(SpawnACar);
+                UpdateButtonState();
+            }
+        }
+
+        public void UpdateButtonState()
+        {
+            if (spawnCarButton != null)
+            {
+                var endpointsManager = FindFirstObjectByType<EndpointsManager>();
+                spawnCarButton.interactable = endpointsManager != null && endpointsManager.HasValidPath() && !isCarActive;
             }
         }
 
@@ -95,8 +106,31 @@ namespace OnTheWay.AI
                     return;
 
                 var startMarkerPosition = placementManager.GetStructureAt(startRoadPosition).GetCarSpawnMarker(path[1]);
-
                 var endMarkerPosition = placementManager.GetStructureAt(endRoadPosition).GetCarEndMarker(path[path.Count-2]);
+
+                // Check if there are obstacles near the spawn position
+                var obstacleManager = FindFirstObjectByType<ObstacleManager>();
+                if (obstacleManager != null)
+                {
+                    var spawnGridPosition = Vector3Int.RoundToInt(startMarkerPosition.Position);
+                    var nearbyPositions = new List<Vector3Int>
+                    {
+                        spawnGridPosition,
+                        spawnGridPosition + Vector3Int.right,
+                        spawnGridPosition + Vector3Int.left,
+                        spawnGridPosition + Vector3Int.forward,
+                        spawnGridPosition + Vector3Int.back
+                    };
+
+                    foreach (var pos in nearbyPositions)
+                    {
+                        if (obstacleManager.IsObstaclePosition(pos))
+                        {
+                            Debug.Log("Cannot spawn car near obstacle at position: " + pos);
+                            return;
+                        }
+                    }
+                }
 
                 carPath = GetCarPath(path, startMarkerPosition.Position, endMarkerPosition.Position);
 

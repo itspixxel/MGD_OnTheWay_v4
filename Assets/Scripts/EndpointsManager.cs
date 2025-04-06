@@ -94,9 +94,21 @@ public class EndpointsManager : MonoBehaviour
 
     public void SimulateCarMovement()
     {
-        if (startStructure != null && endStructure != null)
+        if (startStructure != null && endStructure != null && HasValidPath())
         {
             aiDirector.SpawnCarBetweenStructures(startStructure, endStructure);
         }
+    }
+
+    public bool HasValidPath()
+    {
+        if (startStructure == null || endStructure == null)
+            return false;
+
+        var startRoadPosition = ((INeedingRoad)startStructure).RoadPosition;
+        var endRoadPosition = ((INeedingRoad)endStructure).RoadPosition;
+
+        var path = placementManager.GetPathBetween(startRoadPosition, endRoadPosition, true);
+        return path != null && path.Count > 2;
     }
 } 

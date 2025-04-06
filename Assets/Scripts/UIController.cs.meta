@@ -3,7 +3,15 @@ guid: 67e70a10840aa5e40833719b578def1b
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - placeRoadButton: {instanceID: 0}
+  - placeHouseButton: {instanceID: 0}
+  - placeSpecialButton: {instanceID: 0}
+  - placeBigStructureButton: {instanceID: 0}
+  - switchCameraViewButton: {instanceID: 0}
+  - clearRoadsButton: {instanceID: 0}
+  - starSprite: {fileID: 21300000, guid: a9e59fe6187e3044995752f98a46db71, type: 3}
+  - emptyStarSprite: {fileID: 21300000, guid: f48682de30c856647beaf011817f71d3, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

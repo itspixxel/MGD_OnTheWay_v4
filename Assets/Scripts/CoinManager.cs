@@ -36,13 +36,8 @@ public class CoinManager : MonoBehaviour
 
     private int CalculateStars()
     {
-        if (coinsCollected >= totalCoinsInLevel)
-            return 3;
-        else if (coinsCollected >= totalCoinsInLevel * 0.5f)
-            return 2;
-        else if (coinsCollected > 0)
-            return 1;
-        return 0;
+        // Each coin equals one star
+        return Mathf.Min(coinsCollected, 3);
     }
 
     public int GetCoinsCollected()

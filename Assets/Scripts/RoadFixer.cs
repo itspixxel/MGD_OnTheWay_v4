@@ -22,10 +22,13 @@ public class RoadFixer : MonoBehaviour
             if (CreateStraightRoad(placementManager, result, temporaryPosition))
                 return;
             CreateCorner(placementManager, result, temporaryPosition);
-        }else if(roadCount == 3 || roadCount == 4)
+        }else if(roadCount == 3)
         {
-            // For 3-way and 4-way intersections, create a corner instead
-            CreateCorner(placementManager, result, temporaryPosition);
+            Create3Way(placementManager, result, temporaryPosition);
+        }
+        else
+        {
+            Create4Way(placementManager, result, temporaryPosition);
         }
     }
 

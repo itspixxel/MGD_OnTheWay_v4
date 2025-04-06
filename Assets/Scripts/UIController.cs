@@ -4,15 +4,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using OnTheWay.AI;
 
 public class UIController : MonoBehaviour
 {
     public Action OnRoadPlacement, OnHousePlacement, OnSpecialPlacement, OnBigStructurePlacement;
     public event Action OnClearRoads;
     public Button placeRoadButton, placeHouseButton, placeSpecialButton, placeBigStructureButton;
+    public Button switchCameraViewButton;
+    public Button clearRoadsButton;
 
     [Header("Coin UI")]
-    public TextMeshProUGUI coinText;
     public Image[] starImages;
     public Sprite starSprite;
     public Sprite emptyStarSprite;
@@ -20,9 +22,13 @@ public class UIController : MonoBehaviour
     public Color outlineColor;
     List<Button> buttonList;
 
+    private CameraViewSwitcher cameraSwitcher;
+    private AiDirector aiDirector;
+
     private void Start()
     {
         buttonList = new List<Button> { placeHouseButton, placeRoadButton, placeSpecialButton, placeBigStructureButton };
+        aiDirector = FindObjectOfType<AiDirector>();
 
         placeRoadButton.onClick.AddListener(() =>
         {
@@ -49,21 +55,61 @@ public class UIController : MonoBehaviour
             OnBigStructurePlacement?.Invoke();
         });
 
+        // Initialize camera switcher
+        cameraSwitcher = FindObjectOfType<CameraViewSwitcher>();
+        if (cameraSwitcher == null)
+        {
+            GameObject cameraSwitcherObj = new GameObject("CameraViewSwitcher");
+            cameraSwitcher = cameraSwitcherObj.AddComponent<CameraViewSwitcher>();
+        }
+
+        // Setup camera view switching button
+        if (switchCameraViewButton != null)
+        {
+            switchCameraViewButton.onClick.AddListener(() =>
+            {
+                cameraSwitcher.ToggleCameraView();
+                UpdateCameraButtonText();
+            });
+            UpdateCameraButtonText();
+        }
+
         // Subscribe to coin collection events
         if (CoinManager.Instance != null)
         {
-            CoinManager.Instance.OnCoinsCollectedChanged.AddListener(UpdateCoinText);
             CoinManager.Instance.OnStarsChanged.AddListener(UpdateStars);
-            UpdateCoinText(CoinManager.Instance.GetCoinsCollected());
             UpdateStars(0);
         }
     }
 
-    private void UpdateCoinText(int coinsCollected)
+    private void Update()
     {
-        if (coinText != null && CoinManager.Instance != null)
+        if (aiDirector != null)
         {
-            coinText.text = $"{coinsCollected}/{CoinManager.Instance.GetTotalCoins()}";
+            bool isCarActive = aiDirector.IsCarActive;
+            foreach (Button button in buttonList)
+            {
+                if (button != null)
+                {
+                    button.interactable = !isCarActive;
+                }
+            }
+            if (clearRoadsButton != null)
+            {
+                clearRoadsButton.interactable = !isCarActive;
+            }
+        }
+    }
+
+    private void UpdateCameraButtonText()
+    {
+        if (switchCameraViewButton != null)
+        {
+            TextMeshProUGUI buttonText = switchCameraViewButton.GetComponentInChildren<TextMeshProUGUI>();
+            if (buttonText != null)
+            {
+                buttonText.text = "Switch to " + (cameraSwitcher.IsTopDownView ? "Angled" : "Top-Down") + " View";
+            }
         }
     }
 
@@ -95,8 +141,6 @@ public class UIController : MonoBehaviour
 
     public void OnRoadButtonClicked()
     {
-        ResetButtonColor();
-        placeRoadButton.GetComponent<Image>().color = Color.green;
         OnRoadPlacement?.Invoke();
     }
 

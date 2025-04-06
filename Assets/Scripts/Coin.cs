@@ -8,6 +8,7 @@ public class Coin : MonoBehaviour
     
     private Vector3 startPosition;
     private float timeOffset;
+    private bool isCollected = false;
 
     private void Start()
     {
@@ -27,8 +28,12 @@ public class Coin : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Car"))
+        if (!isCollected && other.CompareTag("Car"))
         {
+            isCollected = true;
+            // Play coin collection sound with current coins collected
+            SVS.AudioPlayer.instance.PlayCoinCollectionSound(CoinManager.Instance.GetCoinsCollected() + 1);
+            
             // Notify the CoinManager that this coin was collected
             CoinManager.Instance.CollectCoin();
             // Destroy the coin
