@@ -913,6 +913,7 @@ PlayerSettings:
   vrEditorSettings: {}
   cloudServicesEnabled:
     UNet: 1
+    Unity Ads: 1
   luminIcon:
     m_Name: 
     m_ModelFolderPath: 
@@ -937,7 +938,7 @@ PlayerSettings:
   cloudProjectId: df738568-33d0-427c-b4f9-e58e5fa8fc99
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: On The Way 2025-03-28_20-15-02
+  projectName: MGD_OnTheWay
   organizationId: pimpyleaf
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0

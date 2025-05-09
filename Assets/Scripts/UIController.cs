@@ -13,6 +13,11 @@ public class UIController : MonoBehaviour
     public Button placeRoadButton, placeHouseButton, placeSpecialButton, placeBigStructureButton;
     public Button switchCameraViewButton;
     public Button clearRoadsButton;
+    public Button pauseButton; // New pause button reference
+
+    [Header("Pause Menu")]
+    public GameObject pauseMenuPrefab; // Reference to pause menu prefab
+    private GameObject pauseMenuInstance; // Instance of the spawned pause menu
 
     [Header("Coin UI")]
     public Image[] starImages;
@@ -24,6 +29,10 @@ public class UIController : MonoBehaviour
 
     private CameraViewSwitcher cameraSwitcher;
     private AiDirector aiDirector;
+    private PauseSystem pauseSystem; // Reference to the pause system component
+    private bool isPaused = false;
+
+    [SerializeField] private GameObject levelUI;
 
     private void Start()
     {
@@ -54,6 +63,12 @@ public class UIController : MonoBehaviour
             ModifyOutline(placeBigStructureButton);
             OnBigStructurePlacement?.Invoke();
         });
+
+        // Setup pause button listener
+        if (pauseButton != null)
+        {
+            pauseButton.onClick.AddListener(TogglePauseMenu);
+        }
 
         // Initialize camera switcher
         cameraSwitcher = FindObjectOfType<CameraViewSwitcher>();
@@ -98,6 +113,12 @@ public class UIController : MonoBehaviour
             {
                 clearRoadsButton.interactable = !isCarActive;
             }
+        }
+
+        // Alternative way to toggle pause - ESC key
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            TogglePauseMenu();
         }
     }
 
@@ -147,5 +168,66 @@ public class UIController : MonoBehaviour
     public void OnClearRoadsButtonClicked()
     {
         OnClearRoads?.Invoke();
+    }
+
+    // Method to toggle pause menu
+    public void TogglePauseMenu()
+    {
+        if (!isPaused)
+        {
+            // Open pause menu
+            if (pauseMenuPrefab != null)
+            {
+                pauseMenuInstance = Instantiate(pauseMenuPrefab, transform.root);
+                levelUI.SetActive(false); // Hide level UI when pause menu is open
+
+                // Get the PauseSystem component from the instantiated prefab
+                pauseSystem = pauseMenuInstance.GetComponent<PauseSystem>();
+                if (pauseSystem != null)
+                {
+                    pauseSystem.Initialize(this);
+                }
+                else
+                {
+                    Debug.LogError("PauseSystem component not found on pause menu prefab!");
+                }
+
+                // Pause the game
+                Time.timeScale = 0f;
+                isPaused = true;
+            }
+            else
+            {
+                Debug.LogError("Pause menu prefab is not assigned!");
+            }
+        }
+        else
+        {
+            // Close existing pause menu
+            if (pauseSystem != null)
+            {
+                pauseSystem.ClosePauseMenu();
+            }
+            else if (pauseMenuInstance != null)
+            {
+                Destroy(pauseMenuInstance);
+                // Resume the game
+                Time.timeScale = 1f;
+                isPaused = false;
+                pauseMenuInstance = null;
+                pauseSystem = null;
+            }
+        }
+    }
+
+    // Called by PauseSystem when it self-destroys
+    public void OnPauseMenuClosed()
+    {
+        pauseMenuInstance = null;
+        pauseSystem = null;
+        // Resume the game
+        Time.timeScale = 1f;
+        isPaused = false;
+        levelUI.SetActive(true); // Show level UI when pause menu is closed
     }
 }

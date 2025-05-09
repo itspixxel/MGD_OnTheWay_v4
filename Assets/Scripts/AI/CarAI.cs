@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using OnTheWay.AI;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -20,12 +21,21 @@ public class CarAI : MonoBehaviour
     [SerializeField]
     private float collisionRaycastLength = 0.1f;
 
+    [SerializeField]
+    private GameObject levelCompleteUIPrefab = null;
+
     [field: SerializeField]
     public UnityEvent OnCarReachedDestination { get; set; }
 
+    [SerializeField]
+    private InterstitialAds adsInitializer;
+
+    [SerializeField]
+    LevelSelect levelSelect;
+
     internal bool IsThisLastPathIndex()
     {
-        return index >= path.Count-1;
+        return index >= path.Count - 1;
     }
 
     private int index = 0;
@@ -44,7 +54,7 @@ public class CarAI : MonoBehaviour
 
     private void Start()
     {
-        if(path == null || path.Count == 0)
+        if (path == null || path.Count == 0)
         {
             Stop = true;
         }
@@ -56,7 +66,7 @@ public class CarAI : MonoBehaviour
 
     public void SetPath(List<Vector3> path)
     {
-        if(path.Count == 0)
+        if (path.Count == 0)
         {
             Destroy(gameObject);
             return;
@@ -82,7 +92,7 @@ public class CarAI : MonoBehaviour
 
     private void CheckForCollisions()
     {
-        if(Physics.Raycast(raycastStartingPoint.transform.position, transform.forward,collisionRaycastLength, 1 << gameObject.layer))
+        if (Physics.Raycast(raycastStartingPoint.transform.position, transform.forward, collisionRaycastLength, 1 << gameObject.layer))
         {
             collisionStop = true;
         }
@@ -103,10 +113,11 @@ public class CarAI : MonoBehaviour
             Vector3 relativepoint = transform.InverseTransformPoint(currentTargetPosition);
             float angle = Mathf.Atan2(relativepoint.x, relativepoint.z) * Mathf.Rad2Deg;
             var rotateCar = 0;
-            if(angle > turningAngleOffset)
+            if (angle > turningAngleOffset)
             {
                 rotateCar = 1;
-            }else if(angle < -turningAngleOffset)
+            }
+            else if (angle < -turningAngleOffset)
             {
                 rotateCar = -1;
             }
@@ -116,14 +127,14 @@ public class CarAI : MonoBehaviour
 
     private void CheckIfArrived()
     {
-        if(Stop == false)
+        if (Stop == false)
         {
             var distanceToCheck = arriveDistance;
-            if(index == path.Count - 1)
+            if (index == path.Count - 1)
             {
                 distanceToCheck = lastPointArriveDistance;
             }
-            if(Vector3.Distance(currentTargetPosition,transform.position) < distanceToCheck)
+            if (Vector3.Distance(currentTargetPosition, transform.position) < distanceToCheck)
             {
                 SetNextTargetIndex();
             }
@@ -133,10 +144,23 @@ public class CarAI : MonoBehaviour
     private void SetNextTargetIndex()
     {
         index++;
-        if(index >= path.Count)
+        if (index >= path.Count)
         {
             Stop = true;
+
+            // Spawn the level complete UI prefab
+            if (levelCompleteUIPrefab != null)
+            {
+                Instantiate(levelCompleteUIPrefab, Vector3.zero, Quaternion.identity);
+                GameObject.Find("LevelUI").SetActive(false);
+                GameObject.Find("InputSystem").GetComponent<InputManager>().enabled = false;
+            }
+            else
+            {
+                Debug.LogWarning("Level Complete UI Prefab not assigned in the inspector!");
+            }
             Debug.Log("Level Complete!");
+
             OnCarReachedDestination?.Invoke();
             Destroy(gameObject);
         }

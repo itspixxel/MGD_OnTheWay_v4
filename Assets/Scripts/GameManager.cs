@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
 
     public CoinManager coinManager;
 
+    public PlacementManager placementManager;  
+
     void Start()
     {
         uiController.OnRoadPlacement += RoadPlacementHandler;
@@ -47,7 +49,7 @@ public class GameManager : MonoBehaviour
     private void TrySelectingAgent(Ray ray)
     {
         GameObject hitObject = objectDetector.RaycastAll(ray);
-        if(hitObject != null)
+        if (hitObject != null)
         {
             var agentScript = hitObject.GetComponent<AiAgent>();
             agentScript?.ShowPath();

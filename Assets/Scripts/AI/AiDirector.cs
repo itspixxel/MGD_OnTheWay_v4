@@ -81,6 +81,7 @@ namespace OnTheWay.AI
             foreach (var house in placementManager.GetAllHouses())
             {
                 TrySpawninACar(house, placementManager.GetRandomSpecialStrucutre());
+                GameObject.Find("InputSystem").GetComponent<InputManager>().enabled = false;
             }
         }
 
