@@ -46,15 +46,14 @@ On The Way is designed to be intuitive and fun for young players, featuring a dr
 - Custom image/UI assets
 
 ## 📸 Screenshots
-![On The Way Cover](images/OnTheWayCover.png)
-![Level Screenshot 1](images/OnTheWayL1.png)
-![Level Screenshot 2](images/OnTheWayL2.png)
+<img width="1920" height="1080" alt="OnTheWayL2" src="https://github.com/user-attachments/assets/97d53836-ea55-4a46-8c71-408731629b3a" />
+<img width="1920" height="1080" alt="OnTheWayL1" src="https://github.com/user-attachments/assets/82c2bb0a-ca1b-42c4-8b7c-303271b1247f" />
+<img width="1920" height="1080" alt="OnTheWayCover" src="https://github.com/user-attachments/assets/b52f810f-6337-4648-95f9-f4cfa25bd8e3" />
+<img width="1920" height="1080" alt="OnTheWayMM" src="https://github.com/user-attachments/assets/c576e17a-9148-43f1-ba58-421f62d26fd3" />
+
 
 ## 📺 Video
 [Gameplay Demo](https://www.youtube.com/watch?v=oB9SgRziwDc)
-
-## 📂 Repository
-[GitHub Repository](https://github.com/itspixxel/MGD_OnTheWay_v4)
 
 ---
 
